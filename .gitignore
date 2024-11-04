@@ -24,3 +24,5 @@ src-0beqz/
 *.njsproj
 *.sln
 *.sw?
+
+/env
