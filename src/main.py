@@ -62,14 +62,17 @@ class handDetector:
                 cv2.rectangle(img, (bbox[0] - 20, bbox[1] - 20),
                             (bbox[2] + 20, bbox[3] + 20), (0, 255, 0), 2)
                 
-            # print(self.lmList[4])
-            # cv2.circle(img, (self.lmList[4][1],self.lmList[4][2]), 5, (255, 0, 0), cv2.FILLED)
+            # print(self.lmList[4][3] * 60)
+            cv2.circle(img, (self.lmList[4][1],self.lmList[4][2]), 5, (255, 0, 0), cv2.FILLED)
+
+            result2 = self.calculateAngle((self.lmList[4][2],self.lmList[4][3]*60),(self.lmList[0][1],self.lmList[0][2]))
+            print(result2, " ",self.lmList[4][3] * 60)
 
             # Gambar garis horizontal dari lmList[0] ke kanan sepanjang 200 piksel
             cv2.line(img, (self.lmList[0][1] - 200, self.lmList[0][2]), (self.lmList[0][1] + 200, self.lmList[0][2]), (0, 255, 0), 2)
             cv2.line(img, (self.lmList[0][1], self.lmList[0][2]), (self.lmList[4][1], self.lmList[4][2]), (0, 255, 255), 2)
             result = self.calculateAngle((self.lmList[0][1],self.lmList[0][2]),(self.lmList[4][1],self.lmList[4][2]))
-            print(result*-1)
+            # print(result*-1)
         return self.lmList, bbox
     
     def calculateAngle(self, point1, point2):
