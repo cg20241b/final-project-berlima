@@ -1,7 +1,48 @@
-import cv2
-import mediapipe as mp
-import time
+from flask_socketio import SocketIO, emit
+from flask import Flask
 import math
+import time
+import mediapipe as mp
+import cv2
+
+
+class FlaskSocketIOServer:
+    def __init__(self, host='0.0.0.0', port=4000, debug=True):
+        self.host = host
+        self.port = port
+        self.debug = debug
+        self.app = Flask(__name__)  # Inisialisasi Flask
+        # self.app.config['SECRET_KEY'] = 'your_secret_key'
+        self.socketio = SocketIO(
+            self.app, cors_allowed_origins="*")
+        self.setup_socket_events()
+
+    def setup_socket_events(self):
+        @self.app.route('/')
+        def index():
+            # Mengirim frame ke klien
+            self.socketio.start_background_task(
+                update, self.socketio)
+
+            return "Server is running!"
+
+        @self.socketio.on('connect')
+        def on_connect():
+            print("Client connected")
+
+            emit('receive_message', {'data': 'Welcome to Flask-SocketIO!'})
+
+        @self.socketio.on('client_event')
+        def handle_client_event(data):
+            print(f"Data received from client: {data}")
+            emit('server_response', {
+                 'data': f"Server received: {data}"}, broadcast=True)
+
+    def run(self):
+        """Menjalankan server Flask dengan SocketIO."""
+
+        self.socketio.run(self.app, host=self.host,
+                          port=self.port, debug=self.debug)
 
 
 class handDetector:
@@ -10,6 +51,8 @@ class handDetector:
         self.maxHands = maxHands
         self.detectionCon = detectionCon
         self.trackCon = trackCon
+        self.counter = 0
+        self.angle = 0
 
         self.mpHands = mp.solutions.hands
         self.hands = self.mpHands.Hands(
@@ -60,25 +103,31 @@ class handDetector:
 
             if draw:
                 cv2.rectangle(img, (bbox[0] - 20, bbox[1] - 20),
-                            (bbox[2] + 20, bbox[3] + 20), (0, 255, 0), 2)
-                
-            # print(self.lmList[4][3] * 60)
-            cv2.circle(img, (self.lmList[4][1],self.lmList[4][2]), 5, (255, 0, 0), cv2.FILLED)
+                              (bbox[2] + 20, bbox[3] + 20), (0, 255, 0), 2)
 
-            result2 = self.calculateAngle((self.lmList[4][2],self.lmList[4][3]*60),(self.lmList[0][1],self.lmList[0][2]))
-            print(result2, " ",self.lmList[4][3] * 60)
+            # print(self.lmList[4][3] * 60)
+            cv2.circle(
+                img, (self.lmList[8][1], self.lmList[8][2]), 5, (255, 0, 0), cv2.FILLED)
+
+            result2 = self.calculateAngle(
+                (self.lmList[4][2], self.lmList[4][3]*60), (self.lmList[0][1], self.lmList[0][2]))
+            # print(result2, " ",self.lmList[4][3] * 60)
 
             # Gambar garis horizontal dari lmList[0] ke kanan sepanjang 200 piksel
-            cv2.line(img, (self.lmList[0][1] - 200, self.lmList[0][2]), (self.lmList[0][1] + 200, self.lmList[0][2]), (0, 255, 0), 2)
-            cv2.line(img, (self.lmList[0][1], self.lmList[0][2]), (self.lmList[4][1], self.lmList[4][2]), (0, 255, 255), 2)
-            result = self.calculateAngle((self.lmList[0][1],self.lmList[0][2]),(self.lmList[4][1],self.lmList[4][2]))
-            # print(result*-1)
+            cv2.line(img, (self.lmList[0][1] - 200, self.lmList[0][2]),
+                     (self.lmList[0][1] + 200, self.lmList[0][2]), (0, 255, 0), 2)
+            cv2.line(img, (self.lmList[0][1], self.lmList[0][2]),
+                     (self.lmList[4][1], self.lmList[4][2]), (0, 255, 255), 2)
+
+            result = self.calculateAngle(
+                (self.lmList[0][1], self.lmList[0][2]), (self.lmList[4][1], self.lmList[4][2]))
+            self.angle = result * -1
         return self.lmList, bbox
-    
+
     def calculateAngle(self, point1, point2):
         """
         Menghitung sudut (dalam derajat) antara dua titik koordinat dengan sumbu horizontal.
-        
+
         :param point1: Tuple (x1, y1) untuk titik pertama
         :param point2: Tuple (x2, y2) untuk titik kedua
         :return: Sudut dalam derajat
@@ -95,17 +144,18 @@ class handDetector:
         angle_deg = math.degrees(angle_rad)
 
         return angle_deg
-    
+
     def detectHandSide(self, handNo=0):
         """
         Mengidentifikasi apakah tangan yang terdeteksi adalah tangan kanan atau kiri.
-        
+
         :param handNo: Nomor tangan yang ingin dideteksi (misalnya, 0 untuk tangan pertama).
         :return: 'Right' jika tangan kanan, 'Left' jika tangan kiri, atau None jika tidak terdeteksi.
         """
         if self.results.multi_handedness:
             hand_info = self.results.multi_handedness[handNo]
-            hand_label = hand_info.classification[0].label  # 'Right' atau 'Left'
+            # 'Right' atau 'Left'
+            hand_label = hand_info.classification[0].label
             # hand_score = hand_info.classification[0].score  # Skor kepercayaan
             return hand_label
         else:
@@ -155,7 +205,8 @@ class handDetector:
         if len(self.lmList) >= 13:  # Pastikan minimal 13 landmark terdeteksi
             # Koordinat pergelangan tangan (wrist) dan ujung jari tengah (middle finger tip)
             x1, y1 = self.lmList[0][1], self.lmList[0][2]  # Pergelangan tangan
-            x2, y2 = self.lmList[12][1], self.lmList[12][2]  # Ujung jari tengah
+            # Ujung jari tengah
+            x2, y2 = self.lmList[12][1], self.lmList[12][2]
 
             # Hitung sudut kemiringan
             delta_x = x2 - x1
@@ -171,7 +222,50 @@ class handDetector:
             return tilt_angle
         else:
             return None
-def main():
+
+    def isLeft(self):
+        if self.angle < 75 and self.angle > 15:
+            return True
+
+    def isRight(self):
+        if self.angle < 165 and self.angle > 105:
+            return True
+
+    def isDown(self):
+        # print(self.angle)
+        if self.lmList:
+            if self.isLeft() and self.lmList[0][2] < self.lmList[20][2]:
+                if self.lmList[20][2] > self.lmList[19][2]:
+                    self.counter += 1
+                    print(self.counter, "baawah kiri")
+            elif self.isRight() and self.lmList[0][2] > self.lmList[20][2]:
+                if self.lmList[20][2] < self.lmList[19][2]:
+                    self.counter += 1
+                    print(self.counter, "bawah kanan")
+            elif self.angle >= 65 and self.angle <= 105:
+                if self.lmList[20][2] > self.lmList[19][2]:
+                    print("bawah")
+        return
+
+    def isUp(self):
+        # print(self.angle)
+        if self.lmList:
+            if self.isLeft():
+                if self.lmList[8][2] < self.lmList[5][2]:
+                    self.counter += 1
+                    print(self.counter, "atas kiri")
+            elif self.isRight():
+                if self.lmList[8][2] < self.lmList[7][2]:
+                    self.counter += 1
+                    print(self.counter, "atas kanan")
+
+            else:
+                if self.angle >= 65 and self.angle <= 105:
+                    if self.lmList[8][2] < self.lmList[5][2]:
+                        print("atas")
+
+
+def update(socketio):
     pTime = 0
     cap = cv2.VideoCapture(0)
     detector = handDetector()
@@ -198,15 +292,33 @@ def main():
         # print(fingers)
         # print(handSide)
         # print(tilt_angle)
-       
+
+        # detector.isDown()
+        # detector.isUp()
+        messages = ""
+        if detector.isLeft():
+            messages = "a"
+        elif detector.isRight():
+            messages = "d"
+
         cv2.imshow("Image", img)
-        
+
         # Tambahkan pengecekan untuk tombol 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+        socketio.emit("receive_message", messages)
+        socketio.sleep(0.001)
+        messages = ""
     cap.release()
     cv2.destroyAllWindows()
+
+
+def main():
+    server = FlaskSocketIOServer(host='0.0.0.0', port=4000, debug=True)
+    server.run()
+
+    print("kontolodon")
 
 
 if __name__ == "__main__":
