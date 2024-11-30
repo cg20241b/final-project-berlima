@@ -24,3 +24,6 @@ Technically, the game will leverage Three.js for rendering 3D environments, whil
 
    Reposition the airplane
    ![alt text](<img/Screenshot from 2024-11-30 21-40-35.png>)
+
+3. Set the camera FOV
+   ![alt text](<img/Screenshot from 2024-12-01 00-15-04.png>)
