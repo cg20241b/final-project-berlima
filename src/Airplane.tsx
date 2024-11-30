@@ -11,6 +11,7 @@ export function Airplane(props: any) {
   const helixMeshRef = useRef<Mesh>();
 
   useFrame(({ camera }) => {
+    // Uncomment this line if you want to move the plane
     // planePosition.add(new Vector3(0, 0, -0.005));
 
     const matrix = new Matrix4().multiply(
