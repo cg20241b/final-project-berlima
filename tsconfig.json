@@ -3,5 +3,11 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "allowJs":true,
+    "jsx": "react-jsx",
+    "moduleResolution": "node",  // Use Node module resolution strategy
+    "esModuleInterop": true   // Ensure compatibility with ES modules
+  }
 }
