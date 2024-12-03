@@ -1,11 +1,8 @@
-import {
-  PerspectiveCamera,
-  Environment,
-  OrbitControls,
-} from '@react-three/drei';
-import { SphereEnv } from './SphereEnv';
-import { Landscape } from './Landscape';
+import { Environment, PerspectiveCamera } from '@react-three/drei';
+
 import { Airplane } from './Airplane';
+import { Landscape } from './Landscape';
+import { SphereEnv } from './SphereEnv';
 
 function App() {
   return (
