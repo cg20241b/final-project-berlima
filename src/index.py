@@ -245,7 +245,7 @@ class handDetector:
             elif self.angle >= 65 and self.angle <= 105:
                 if self.lmList[20][2] > self.lmList[19][2]:
                     print("bawah")
-        return
+                    return True
 
     def isUp(self):
         # print(self.angle)
@@ -263,6 +263,7 @@ class handDetector:
                 if self.angle >= 65 and self.angle <= 105:
                     if self.lmList[8][2] < self.lmList[5][2]:
                         print("atas")
+                        return True
 
 
 def update(socketio):
@@ -300,6 +301,10 @@ def update(socketio):
             messages = "a"
         elif detector.isRight():
             messages = "d"
+        elif detector.isUp():
+            messages = "w"
+        elif detector.isDown():
+            messages = "s"
 
         cv2.imshow("Image", img)
 
@@ -308,8 +313,8 @@ def update(socketio):
             break
 
         socketio.emit("receive_message", messages)
-        socketio.sleep(0.001)
         messages = ""
+        socketio.sleep(0)
     cap.release()
     cv2.destroyAllWindows()
 
@@ -317,8 +322,6 @@ def update(socketio):
 def main():
     server = FlaskSocketIOServer(host='0.0.0.0', port=4000, debug=True)
     server.run()
-
-    print("kontolodon")
 
 
 if __name__ == "__main__":
