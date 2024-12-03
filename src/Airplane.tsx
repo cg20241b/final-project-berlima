@@ -1,9 +1,17 @@
-import { useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
-import { Matrix4, Vector3, Group, Mesh } from 'three';
-import { updatePlaneAxis } from './control';
+import { GroupProps, useFrame } from '@react-three/fiber';
+import { useRef } from 'react';
+import {
+  Group,
+  Matrix4,
+  Mesh,
+  MeshStandardMaterial,
+  PerspectiveCamera,
+  Vector3,
+} from 'three';
 import { Quaternion } from 'three';
+
+import { updatePlaneAxis } from './control';
 
 // Vector for controlling the plane
 const x = new Vector3(1, 0, 0);
@@ -16,16 +24,27 @@ export const planePosition = new Vector3(0, 3, 7);
 const delayedRotMatrix = new Matrix4();
 const delayedQuaternion = new Quaternion();
 
-export function Airplane(props: any) {
-  const { nodes, materials } = useGLTF('/assets/models/airplane.glb');
-  const groupRef = useRef<Group>();
-  const helixMeshRef = useRef<Mesh>();
+interface Nodes {
+  supports: Mesh;
+  chassis: Mesh;
+  helix: Mesh;
+}
+
+export function Airplane(props: GroupProps) {
+  const { nodes, materials } = useGLTF(
+    '/assets/models/airplane.glb',
+  ) as unknown as {
+    nodes: Nodes;
+    materials: { [key: string]: MeshStandardMaterial };
+  };
+  const groupRef = useRef<Group>(null);
+  const helixMeshRef = useRef<Mesh>(null);
 
   useFrame(({ camera }) => {
     // Uncomment this line if you want to move the plane forward
     // planePosition.add(new Vector3(0, 0, -0.005));
 
-    updatePlaneAxis(x, y, z, planePosition, camera);
+    updatePlaneAxis(x, y, z, planePosition, camera as PerspectiveCamera);
 
     const rotMatrix = new Matrix4().makeBasis(x, y, z);
 
@@ -45,12 +64,12 @@ export function Airplane(props: any) {
       groupRef.current.matrixWorldNeedsUpdate = true;
     }
 
-    var quatA = new Quaternion().copy(delayedQuaternion);
-    var quatB = new Quaternion();
+    const quatA = new Quaternion().copy(delayedQuaternion);
+    const quatB = new Quaternion();
     quatB.setFromRotationMatrix(rotMatrix);
 
-    var interpolationFactor = 0.175;
-    var interpolatedQuaternion = new Quaternion().copy(quatA);
+    const interpolationFactor = 0.175;
+    const interpolatedQuaternion = new Quaternion().copy(quatA);
     interpolatedQuaternion.slerp(quatB, interpolationFactor);
     delayedQuaternion.copy(interpolatedQuaternion);
 
@@ -75,25 +94,27 @@ export function Airplane(props: any) {
     camera.matrix.copy(cameraMatrix);
     camera.matrixWorldNeedsUpdate = true;
 
-    (helixMeshRef.current as any).rotation.z -= 1.0;
+    if (helixMeshRef.current) {
+      helixMeshRef.current.rotation.z -= 1.0;
+    }
   });
 
   return (
     <>
-      <group ref={groupRef as any}>
+      <group ref={groupRef}>
         <group {...props} dispose={null} scale={0.01} rotation-y={Math.PI}>
           <mesh
-            geometry={(nodes.supports as any).geometry}
+            geometry={nodes.supports.geometry}
             material={materials['Material.004']}
           />
           <mesh
-            geometry={(nodes.chassis as any).geometry}
+            geometry={nodes.chassis.geometry}
             material={materials['Material.005']}
           />
           <mesh
-            geometry={(nodes.helix as any).geometry}
+            geometry={nodes.helix.geometry}
             material={materials['Material.005']}
-            ref={helixMeshRef as any}
+            ref={helixMeshRef}
           />
         </group>
       </group>

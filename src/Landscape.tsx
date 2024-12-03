@@ -1,9 +1,25 @@
 import { MeshReflectorMaterial, useGLTF } from '@react-three/drei';
-import { Color, MeshStandardMaterial } from 'three';
-import { useMemo, useEffect } from 'react';
+import { GroupProps } from '@react-three/fiber';
+import { useEffect, useMemo } from 'react';
+import { BufferGeometry, Color, MeshStandardMaterial } from 'three';
 
-export function Landscape(props: any) {
-  const { nodes, materials } = useGLTF('/assets/models/scene.glb');
+interface Nodes {
+  landscape_gltf: { geometry: BufferGeometry };
+  landscape_borders: { geometry: BufferGeometry };
+  trees_light: { geometry: BufferGeometry };
+  water: { geometry: BufferGeometry };
+  water1: { geometry: BufferGeometry };
+  water2: { geometry: BufferGeometry };
+  lights: { geometry: BufferGeometry };
+}
+
+export function Landscape(props: GroupProps) {
+  const { nodes, materials } = useGLTF(
+    '/assets/models/scene.glb',
+  ) as unknown as {
+    nodes: Nodes;
+    materials: { [key: string]: MeshStandardMaterial };
+  };
 
   const { waterMaterial } = useMemo(() => {
     const lightsMaterial = new MeshStandardMaterial({
@@ -52,35 +68,26 @@ export function Landscape(props: any) {
     <>
       <group {...props} dispose={null}>
         <mesh
-          geometry={(nodes.landscape_gltf as any).geometry}
+          geometry={nodes.landscape_gltf.geometry}
           material={materials['Material.009']}
           castShadow
           receiveShadow
         />
         <mesh
-          geometry={(nodes.landscape_borders as any).geometry}
+          geometry={nodes.landscape_borders.geometry}
           material={materials['Material.010']}
         />
         <mesh
-          geometry={(nodes.trees_light as any).geometry}
+          geometry={nodes.trees_light.geometry}
           material={materials['Material.008']}
           castShadow
           receiveShadow
         />
+        <mesh geometry={nodes.water.geometry} material={materials.Water} />
+        <mesh geometry={nodes.water1.geometry} material={materials.Water} />
+        <mesh geometry={nodes.water2.geometry} material={materials.Water} />
         <mesh
-          geometry={(nodes.water as any).geometry}
-          material={materials.Water}
-        />
-        <mesh
-          geometry={(nodes.water1 as any).geometry}
-          material={materials.Water}
-        />
-        <mesh
-          geometry={(nodes.water2 as any).geometry}
-          material={materials.Water}
-        />
-        <mesh
-          geometry={(nodes.lights as any).geometry}
+          geometry={nodes.lights.geometry}
           material={materials['Material.001']}
         />
 

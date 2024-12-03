@@ -1,9 +1,9 @@
 import './index.css';
 
-// import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
 import { Canvas } from '@react-three/fiber';
 import { Suspense } from 'react';
+// import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 
 import App from './App.tsx';
 
