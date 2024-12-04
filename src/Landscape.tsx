@@ -13,7 +13,7 @@ interface Nodes {
   lights: { geometry: BufferGeometry };
 }
 
-export function Landscape(props: GroupProps) {
+export default function Landscape(props: GroupProps) {
   const { nodes, materials } = useGLTF(
     '/assets/models/scene.glb',
   ) as unknown as {

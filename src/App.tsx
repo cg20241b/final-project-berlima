@@ -1,8 +1,8 @@
 import { Environment, PerspectiveCamera } from '@react-three/drei';
 
-import { Airplane } from './Airplane';
-import { Landscape } from './Landscape';
-import { SphereEnv } from './SphereEnv';
+import Airplane from './Airplane';
+import Landscape from './Landscape';
+import SphereEnv from './SphereEnv';
 
 function App() {
   return (

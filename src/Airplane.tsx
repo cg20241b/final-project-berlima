@@ -1,6 +1,6 @@
 import { useGLTF } from '@react-three/drei';
 import { GroupProps, useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import * as React from 'react';
 import {
   Group,
   Matrix4,
@@ -30,15 +30,15 @@ interface Nodes {
   helix: Mesh;
 }
 
-export function Airplane(props: GroupProps) {
+export default function Airplane(props: GroupProps) {
   const { nodes, materials } = useGLTF(
     '/assets/models/airplane.glb',
   ) as unknown as {
     nodes: Nodes;
     materials: { [key: string]: MeshStandardMaterial };
   };
-  const groupRef = useRef<Group>(null);
-  const helixMeshRef = useRef<Mesh>(null);
+  const groupRef = React.useRef<Group>(null);
+  const helixMeshRef = React.useRef<Mesh>(null);
 
   useFrame(({ camera }) => {
     // Uncomment this line if you want to move the plane forward
