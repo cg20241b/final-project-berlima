@@ -1,8 +1,12 @@
 import { Environment, PerspectiveCamera } from '@react-three/drei';
+import { EffectComposer, HueSaturation } from '@react-three/postprocessing';
+import { BlendFunction } from 'postprocessing';
 
 import Airplane from './Airplane';
 import Landscape from './Landscape';
+import MotionBlur from './MotionBlur';
 import SphereEnv from './SphereEnv';
+import Targets from './Targets';
 
 function App() {
   return (
@@ -11,10 +15,10 @@ function App() {
       <Environment background={false} files={'assets/textures/envmap.hdr'} />
 
       <PerspectiveCamera makeDefault position={[0, 10, 10]} />
-      {/* <OrbitControls target={[0, 0, 0]} /> */}
 
       <Landscape />
       <Airplane />
+      <Targets />
 
       <directionalLight
         castShadow
@@ -31,6 +35,15 @@ function App() {
         shadow-camera-left={-6.2}
         shadow-camera-right={6.4}
       />
+
+      <EffectComposer>
+        <MotionBlur />
+        <HueSaturation
+          blendFunction={BlendFunction.NORMAL} // Blend mode
+          hue={-0.15} // Hue rotation in radians
+          saturation={0.1} // Saturation shift in radians
+        />
+      </EffectComposer>
     </>
   );
 }
