@@ -225,10 +225,12 @@ class handDetector:
 
     def isLeft(self):
         if self.angle < 75 and self.angle > 15:
+            print("KOMUNIS")
             return True
 
     def isRight(self):
         if self.angle < 165 and self.angle > 105:
+            print("SOSIALIS")
             return True
 
     def isDown(self):
@@ -265,6 +267,22 @@ class handDetector:
                         print("atas")
                         return True
 
+    def isBoost(self):
+        if len(self.lmList):
+            if self.isLeft():
+                if self.lmList[12][2] > self.lmList[10][2]:
+                    print("boost kiri")
+                    return True
+            elif self.isRight():
+                if self.lmList[12][2] < self.lmList[10][2]:
+                    print("boost kanan")
+                    return True
+            else:
+                if self.lmList[12][1] > self.lmList[10][1]:
+                    print("boost")
+                    return True
+            return False
+
 
 def update(socketio):
     pTime = 0
@@ -296,15 +314,35 @@ def update(socketio):
 
         # detector.isDown()
         # detector.isUp()
-        messages = ""
+
+        messages = {
+            "a": 0.0,
+            "d": 0.0,
+            "W": 0,
+            "s": 0,
+            "b": 0
+        }
+        messages["a"] = 0.0
+        messages["d"] = 0.0
+        messages["w"] = 0
+        messages["s"] = 0
+        messages["b"] = 0
+
         if detector.isLeft():
-            messages = "a"
+            messages["a"] = 1.0
         elif detector.isRight():
-            messages = "d"
-        elif detector.isUp():
-            messages = "w"
+            messages["d"] = 1.0
+
+        if detector.isUp():
+            messages["w"] = 1
         elif detector.isDown():
-            messages = "s"
+            messages["s"] = 1
+
+        if detector.isBoost():
+            messages["b"] = 1
+
+        for key, value in messages.items():
+            print(f"{key}: {value}")
 
         cv2.imshow("Image", img)
 
