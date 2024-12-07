@@ -315,6 +315,35 @@ def update(socketio):
         # detector.isDown()
         # detector.isUp()
 
+        messages = {
+            "a": 0.0,
+            "d": 0.0,
+            "W": 0,
+            "s": 0,
+            "b": 0
+        }
+        messages["a"] = 0.0
+        messages["d"] = 0.0
+        messages["w"] = 0
+        messages["s"] = 0
+        messages["b"] = 0
+
+        if detector.isLeft():
+            messages["a"] = 1.0
+        elif detector.isRight():
+            messages["d"] = 1.0
+
+        if detector.isUp():
+            messages["w"] = 1
+        elif detector.isDown():
+            messages["s"] = 1
+
+        if detector.isBoost():
+            messages["b"] = 1
+
+        for key, value in messages.items():
+            print(f"{key}: {value}")
+
         messages = ["-", "-", "-"]
         if detector.isLeft():
             messages[0] = "a"

@@ -26,3 +26,4 @@ src-0beqz/
 *.sw?
 
 /env
+/venv
