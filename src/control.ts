@@ -1,4 +1,13 @@
+import { io } from 'socket.io-client';
 import { PerspectiveCamera, Vector3 } from 'three';
+
+type Controls = {
+  a: number;
+  d: number;
+  s: number;
+  w: number;
+  b: number;
+};
 
 export const controls: { [key: string]: boolean } = {};
 
@@ -19,18 +28,38 @@ let yawVelocity = 0;
 let pitchVelocity = 0;
 const maxVelocity = 0.04;
 
-let planeSpeed = 0.006;
+const planeSpeed = 0.006;
 let isPaused = false;
 
+export let messages: Controls | null = null;
 export let turbo = 0;
+const socket = io('http://localhost:4000');
+
+socket.on('connect', () => {
+  // eslint-disable-next-line no-console
+  console.log('connected');
+  socket.on('receive_message', (data: Controls) => {
+    messages = data;
+  });
+});
+
+socket.on('disconnect', () => {
+  // eslint-disable-next-line no-console
+  console.log('disconnected');
+  messages = null;
+});
 
 export function updatePlaneAxis(
   x: Vector3,
   y: Vector3,
   z: Vector3,
   planePosition: Vector3,
-  camera: PerspectiveCamera
+  camera: PerspectiveCamera,
 ) {
+  if (!messages) {
+    return;
+  }
+
   // Pause/Resume toggle using 'p' button
   if (controls['p']) {
     isPaused = !isPaused; // Toggle isPaused state
@@ -52,7 +81,7 @@ export function updatePlaneAxis(
   if (Math.abs(pitchVelocity) > maxVelocity) {
     pitchVelocity = Math.sign(pitchVelocity) * maxVelocity;
   }
-  if (Math.abs(yawVelocity) > maxVelocity){
+  if (Math.abs(yawVelocity) > maxVelocity) {
     yawVelocity = Math.sign(yawVelocity) * maxVelocity;
   }
 
@@ -65,17 +94,21 @@ export function updatePlaneAxis(
     yawVelocity -= 0.0025;
   }
 
-  if (controls['w']) {
-    pitchVelocity -= 0.0025;
-  }
-  if (controls['s']) {
+  if (controls['w'] || messages?.w) {
     pitchVelocity += 0.0025;
+    messages = null;
   }
-  if (controls['a']) {
-    rollVelocity += 0.0025;
+  if (controls['s'] || messages?.s) {
+    pitchVelocity -= 0.0025;
+    messages = null;
   }
-  if (controls['d']) {
-    rollVelocity -= 0.0025;
+  if (controls['a'] || messages?.a) {
+    yawVelocity -= 0.0025;
+    messages = null;
+  }
+  if (controls['d'] || messages?.d) {
+    yawVelocity += 0.0025;
+    messages = null;
   }
 
   // Reset plane orientation and position
@@ -104,7 +137,7 @@ export function updatePlaneAxis(
   z.normalize();
 
   // Turbo logic
-  if (controls['shift']) {
+  if (controls['shift'] || messages?.b) {
     turbo += 0.025;
   } else {
     turbo -= 0.95;
