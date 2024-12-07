@@ -225,10 +225,12 @@ class handDetector:
 
     def isLeft(self):
         if self.angle < 75 and self.angle > 15:
+            print("KOMUNIS")
             return True
 
     def isRight(self):
         if self.angle < 165 and self.angle > 105:
+            print("SOSIALIS")
             return True
 
     def isDown(self):
@@ -265,6 +267,22 @@ class handDetector:
                         print("atas")
                         return True
 
+    def isBoost(self):
+        if len(self.lmList):
+            if self.isLeft():
+                if self.lmList[12][2] > self.lmList[10][2]:
+                    print("boost kiri")
+                    return True
+            elif self.isRight():
+                if self.lmList[12][2] < self.lmList[10][2]:
+                    print("boost kanan")
+                    return True
+            else:
+                if self.lmList[12][1] > self.lmList[10][1]:
+                    print("boost")
+                    return True
+            return False
+
 
 def update(socketio):
     pTime = 0
@@ -296,16 +314,20 @@ def update(socketio):
 
         # detector.isDown()
         # detector.isUp()
-        messages = ""
-        if detector.isLeft():
-            messages = "a"
-        elif detector.isRight():
-            messages = "d"
-        elif detector.isUp():
-            messages = "w"
-        elif detector.isDown():
-            messages = "s"
 
+        messages = ["-", "-", "-"]
+        if detector.isLeft():
+            messages[0] = "a"
+        elif detector.isRight():
+            messages[0] = "d"
+
+        if detector.isUp():
+            messages[1] = "w"
+        elif detector.isDown():
+            messages[1] = "s"
+
+        if detector.isBoost():
+            messages[2] = "b"
         cv2.imshow("Image", img)
 
         # Tambahkan pengecekan untuk tombol 'q'
