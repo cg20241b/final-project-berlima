@@ -40,6 +40,8 @@ socket.on('connect', () => {
   console.log('connected');
   socket.on('receive_message', (data: Controls) => {
     messages = data;
+    // eslint-disable-next-line no-console
+    console.log(data);
   });
 });
 
@@ -87,28 +89,24 @@ export function updatePlaneAxis(
 
   // Update velocities based on controls
   if (controls['q']) {
-    yawVelocity += 0.0025;
+    yawVelocity += 0.001;
   }
 
   if (controls['e']) {
-    yawVelocity -= 0.0025;
+    yawVelocity -= 0.001;
   }
 
   if (controls['w'] || messages?.w) {
-    pitchVelocity += 0.0025;
-    messages = null;
+    pitchVelocity += 0.001;
   }
   if (controls['s'] || messages?.s) {
-    pitchVelocity -= 0.0025;
-    messages = null;
+    pitchVelocity -= 0.001;
   }
   if (controls['a'] || messages?.a) {
-    yawVelocity -= 0.0025;
-    messages = null;
+    rollVelocity += 0.001;
   }
   if (controls['d'] || messages?.d) {
-    yawVelocity += 0.0025;
-    messages = null;
+    rollVelocity -= 0.001;
   }
 
   // Reset plane orientation and position
@@ -119,7 +117,7 @@ export function updatePlaneAxis(
     x.set(1, 0, 0);
     y.set(0, 1, 0);
     z.set(0, 0, 1);
-    planePosition.set(0, 3, 7);
+    // planePosition.set(0, 3, 7);
   }
 
   // Update orientation
@@ -138,7 +136,7 @@ export function updatePlaneAxis(
 
   // Turbo logic
   if (controls['shift'] || messages?.b) {
-    turbo += 0.025;
+    turbo += 0.01;
   } else {
     turbo -= 0.95;
   }
