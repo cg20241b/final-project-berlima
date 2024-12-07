@@ -14,29 +14,55 @@ window.addEventListener('keyup', (e) => {
   controls[e.key.toLowerCase()] = false;
 });
 
+let rollVelocity = 0;
 let yawVelocity = 0;
 let pitchVelocity = 0;
 const maxVelocity = 0.04;
 
-// let rollVelocity = 0;
-const planeSpeed = 0.006;
+let planeSpeed = 0.006;
+let isPaused = false;
 
 export let turbo = 0;
+
 export function updatePlaneAxis(
   x: Vector3,
   y: Vector3,
   z: Vector3,
   planePosition: Vector3,
-  camera: PerspectiveCamera,
+  camera: PerspectiveCamera
 ) {
-  yawVelocity *= 0.95;
-  pitchVelocity *= 0.95;
+  // Pause/Resume toggle using 'p' button
+  if (controls['p']) {
+    isPaused = !isPaused; // Toggle isPaused state
+    controls['p'] = false; // Reset the 'p' control to avoid repeated toggling
+  }
 
-  if (Math.abs(yawVelocity) > maxVelocity) {
-    yawVelocity = Math.sign(yawVelocity) * maxVelocity;
+  if (isPaused) {
+    return; // Skip all updates if paused
+  }
+
+  // Gradually reduce velocities
+  rollVelocity *= 0.95;
+  pitchVelocity *= 0.95;
+  yawVelocity *= 0.95;
+
+  if (Math.abs(rollVelocity) > maxVelocity) {
+    rollVelocity = Math.sign(rollVelocity) * maxVelocity;
   }
   if (Math.abs(pitchVelocity) > maxVelocity) {
     pitchVelocity = Math.sign(pitchVelocity) * maxVelocity;
+  }
+  if (Math.abs(yawVelocity) > maxVelocity){
+    yawVelocity = Math.sign(yawVelocity) * maxVelocity;
+  }
+
+  // Update velocities based on controls
+  if (controls['q']) {
+    yawVelocity += 0.0025;
+  }
+
+  if (controls['e']) {
+    yawVelocity -= 0.0025;
   }
 
   if (controls['w']) {
@@ -46,14 +72,15 @@ export function updatePlaneAxis(
     pitchVelocity += 0.0025;
   }
   if (controls['a']) {
-    yawVelocity += 0.0025;
+    rollVelocity += 0.0025;
   }
   if (controls['d']) {
-    yawVelocity -= 0.0025;
+    rollVelocity -= 0.0025;
   }
 
+  // Reset plane orientation and position
   if (controls['r']) {
-    yawVelocity = 0;
+    rollVelocity = 0;
     pitchVelocity = 0;
     turbo = 0;
     x.set(1, 0, 0);
@@ -62,17 +89,22 @@ export function updatePlaneAxis(
     planePosition.set(0, 3, 7);
   }
 
-  x.applyAxisAngle(z, yawVelocity);
-  y.applyAxisAngle(z, yawVelocity);
+  // Update orientation
+  x.applyAxisAngle(z, rollVelocity);
+  y.applyAxisAngle(z, rollVelocity);
 
   y.applyAxisAngle(x, pitchVelocity);
   z.applyAxisAngle(x, pitchVelocity);
+
+  x.applyAxisAngle(y, yawVelocity);
+  z.applyAxisAngle(y, yawVelocity);
 
   x.normalize();
   y.normalize();
   z.normalize();
 
-  if (controls.shift) {
+  // Turbo logic
+  if (controls['shift']) {
     turbo += 0.025;
   } else {
     turbo -= 0.95;
@@ -81,8 +113,10 @@ export function updatePlaneAxis(
 
   const turboSpeed = easeOutQuad(turbo) * 0.02;
 
+  // Update camera field of view
   camera.fov = 45 + turboSpeed * 900;
   camera.updateProjectionMatrix();
 
+  // Update plane position
   planePosition.add(z.clone().multiplyScalar(-planeSpeed - turboSpeed));
 }
