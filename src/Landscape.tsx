@@ -13,6 +13,8 @@ interface Nodes {
   water1: { geometry: BufferGeometry };
   water2: { geometry: BufferGeometry };
   lights: { geometry: BufferGeometry };
+  Cube001: { geometry: BufferGeometry };
+  Cube002: { geometry: BufferGeometry };
 }
 
 export default function Landscape(props: GroupProps) {
@@ -87,11 +89,18 @@ export default function Landscape(props: GroupProps) {
           material={materials['Material.010']}
         />
         <mesh
-          geometry={nodes.trees_light.geometry}
-          material={materials['Material.008']}
-          castShadow
-          receiveShadow
+          geometry={nodes.Cube001.geometry}
+          material={materials['Material.003']}
+          position={[-1.04, 2.766, 1.871]}
+          scale={[0.22, 2.207, 0.22]}
         />
+        <mesh
+          geometry={nodes.Cube002.geometry}
+          material={materials['Material.003']}
+          position={[-0.243, 2.766, 1.293]}
+          scale={[0.22, 2.207, 0.22]}
+        />
+
         <mesh geometry={nodes.water.geometry} material={materials.Water} />
         <mesh geometry={nodes.water1.geometry} material={materials.Water} />
         <mesh geometry={nodes.water2.geometry} material={materials.Water} />

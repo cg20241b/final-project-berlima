@@ -18,6 +18,20 @@ interface Nodes {
   supports: Mesh;
   chassis: Mesh;
   helix: Mesh;
+  aileron1: Mesh;
+  aileron2: Mesh;
+  Body16: Mesh;
+  wing1: Mesh;
+  wing2: Mesh;
+  GPS: Mesh;
+  Body1001: Mesh;
+  Body1002: Mesh;
+  Body1003: Mesh;
+  Body1004: Mesh;
+  Body1005: Mesh;
+  Body1006: Mesh;
+  Body1007: Mesh;
+  Body1008: Mesh;
 }
 
 type AirplaneProps = {
@@ -37,7 +51,7 @@ export default function Airplane({ boundingBox, ...props }: AirplaneProps) {
   const z = new Vector3(0, 0, 1);
 
   const { nodes, materials } = useGLTF(
-    '/assets/models/airplane.glb',
+    '/assets/models/PALKONJET.glb',
   ) as unknown as {
     nodes: Nodes;
     materials: { [key: string]: MeshStandardMaterial };
@@ -126,19 +140,106 @@ export default function Airplane({ boundingBox, ...props }: AirplaneProps) {
   return (
     <>
       <group ref={groupRef}>
-        <group {...props} dispose={null} scale={0.01} rotation-y={Math.PI}>
+        <group {...props} dispose={null} scale={0.0001} rotation-y={Math.PI}>
+          <group position={[0, 58.375, 350]} rotation={[Math.PI / 2, 0, 0]}>
+            <mesh
+              geometry={nodes.GPS.geometry}
+              material={materials.Steel}
+              scale={10}
+            />
+          </group>
+          <group position={[-39.62, 74.441, 74]} rotation={[0, 0, -Math.PI]}>
+            <group position={[0, 30, -1.063]}>
+              <mesh
+                geometry={nodes.Body1003.geometry}
+                material={materials.Steel}
+                scale={10}
+              />
+            </group>
+            <group position={[0, 20, 7.873]}>
+              <mesh
+                geometry={nodes.Body1004.geometry}
+                material={materials.Steel}
+                scale={10}
+              />
+            </group>
+            <group
+              position={[-190.059, 110.246, -243.481]}
+              rotation={[-Math.PI / 2, -0.524, 0]}
+            >
+              <mesh
+                geometry={nodes.Body1005.geometry}
+                material={materials.black}
+                scale={10}
+              />
+            </group>
+            <group
+              position={[-17.491, -110.581, -243.481]}
+              rotation={[Math.PI / 2, -Math.PI / 6, Math.PI]}
+            >
+              <mesh
+                geometry={nodes.Body1007.geometry}
+                material={materials.black}
+                scale={10}
+              />
+            </group>
+            <group
+              position={[-182.559, 97.255, -242.18]}
+              rotation={[-Math.PI / 2, -0.524, 0]}
+            >
+              <mesh
+                geometry={nodes.Body1006.geometry}
+                material={materials.Steel}
+                scale={10}
+              />
+            </group>
+            <group
+              position={[-9.991, -97.591, -242.18]}
+              rotation={[Math.PI / 2, -Math.PI / 6, Math.PI]}
+            >
+              <mesh
+                geometry={nodes.Body1008.geometry}
+                material={materials.Steel}
+                scale={10}
+              />
+            </group>
+            <mesh
+              geometry={nodes.Body1002.geometry}
+              material={materials.Steel}
+              scale={10}
+            />
+          </group>
+          <group position={[-4, -65.873, -80.251]} rotation={[-1.474, 0, 0]}>
+            <mesh
+              geometry={nodes.Body1001.geometry}
+              material={materials.black}
+              scale={10}
+            />
+          </group>
           <mesh
-            geometry={nodes.supports.geometry}
-            material={materials['Material.004']}
+            geometry={nodes.aileron1.geometry}
+            material={materials.black}
+            scale={10}
           />
           <mesh
-            geometry={nodes.chassis.geometry}
-            material={materials['Material.005']}
+            geometry={nodes.aileron2.geometry}
+            material={materials.black}
+            scale={10}
           />
           <mesh
-            geometry={nodes.helix.geometry}
-            material={materials['Material.005']}
-            ref={helixMeshRef}
+            geometry={nodes.Body16.geometry}
+            material={materials.silver}
+            scale={10}
+          />
+          <mesh
+            geometry={nodes.wing1.geometry}
+            material={materials.blue}
+            scale={10}
+          />
+          <mesh
+            geometry={nodes.wing2.geometry}
+            material={materials.blue}
+            scale={10}
           />
         </group>
       </group>
@@ -146,4 +247,4 @@ export default function Airplane({ boundingBox, ...props }: AirplaneProps) {
   );
 }
 
-useGLTF.preload('/assets/models/airplane.glb');
+useGLTF.preload('/assets/models/PALKONJET.glb');
