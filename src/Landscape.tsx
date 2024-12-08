@@ -1,7 +1,9 @@
 import { MeshReflectorMaterial, useGLTF } from '@react-three/drei';
 import { GroupProps } from '@react-three/fiber';
 import * as React from 'react';
-import { BufferGeometry, Color, MeshStandardMaterial } from 'three';
+import { Box3, BufferGeometry, Color, Mesh, MeshStandardMaterial } from 'three';
+
+import Airplane from './Airplane';
 
 interface Nodes {
   landscape_gltf: { geometry: BufferGeometry };
@@ -52,6 +54,13 @@ export default function Landscape(props: GroupProps) {
 
     return { lightsMaterial, waterMaterial: waterMat };
   }, []);
+
+  const boundingBox = React.useMemo(() => {
+    const box = new Box3().setFromObject(
+      new Mesh(nodes.landscape_gltf.geometry),
+    );
+    return box;
+  }, [nodes]);
 
   React.useEffect(() => {
     const LandscapeMat = materials['Material.009'] as MeshStandardMaterial;
@@ -116,6 +125,7 @@ export default function Landscape(props: GroupProps) {
           {waterMaterial}
         </mesh>
       </group>
+      <Airplane boundingBox={boundingBox} />
     </>
   );
 }

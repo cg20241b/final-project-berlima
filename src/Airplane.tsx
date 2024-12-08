@@ -2,6 +2,7 @@ import { useGLTF } from '@react-three/drei';
 import { GroupProps, useFrame } from '@react-three/fiber';
 import * as React from 'react';
 import {
+  Box3,
   Group,
   Matrix4,
   Mesh,
@@ -19,9 +20,13 @@ interface Nodes {
   helix: Mesh;
 }
 
+type AirplaneProps = {
+  boundingBox: Box3;
+} & GroupProps;
+
 export const planePosition = new Vector3(0, 3, 7);
 
-export default function Airplane(props: GroupProps) {
+export default function Airplane({ boundingBox, ...props }: AirplaneProps) {
   // Vector for controlling the plane
   const x = new Vector3(1, 0, 0);
   const y = new Vector3(0, 1, 0);
@@ -37,6 +42,27 @@ export default function Airplane(props: GroupProps) {
   const helixMeshRef = React.useRef<Mesh>(null);
 
   useFrame(({ camera }) => {
+    const dampingFactor = 0.1;
+
+    if (planePosition.x < boundingBox.min.x) {
+      planePosition.x += (boundingBox.min.x - planePosition.x) * dampingFactor;
+    }
+    if (planePosition.x > boundingBox.max.x) {
+      planePosition.x += (boundingBox.max.x - planePosition.x) * dampingFactor;
+    }
+    if (planePosition.y < boundingBox.min.y) {
+      planePosition.y += (boundingBox.min.y - planePosition.y) * dampingFactor;
+    }
+    if (planePosition.y > boundingBox.max.y) {
+      planePosition.y += (boundingBox.max.y - planePosition.y) * dampingFactor;
+    }
+    if (planePosition.z < boundingBox.min.z) {
+      planePosition.z += (boundingBox.min.z - planePosition.z) * dampingFactor;
+    }
+    if (planePosition.z > boundingBox.max.z) {
+      planePosition.z += (boundingBox.max.z - planePosition.z) * dampingFactor;
+    }
+
     updatePlaneAxis(x, y, z, planePosition, camera as PerspectiveCamera);
 
     const rotMatrix = new Matrix4().makeBasis(x, y, z);

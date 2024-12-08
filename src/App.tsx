@@ -2,7 +2,6 @@ import { Environment, PerspectiveCamera } from '@react-three/drei';
 import { EffectComposer, HueSaturation } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 
-import Airplane from './Airplane';
 import Landscape from './Landscape';
 import MotionBlur from './MotionBlur';
 import SphereEnv from './SphereEnv';
@@ -17,7 +16,6 @@ function App() {
       <PerspectiveCamera makeDefault position={[0, 10, 10]} />
 
       <Landscape />
-      <Airplane />
       <Targets />
 
       <directionalLight
