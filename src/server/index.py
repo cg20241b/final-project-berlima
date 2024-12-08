@@ -225,12 +225,10 @@ class handDetector:
 
     def isLeft(self):
         if self.angle < 75 and self.angle > 15:
-            print("KOMUNIS")
             return True
 
     def isRight(self):
         if self.angle < 165 and self.angle > 105:
-            print("SOSIALIS")
             return True
 
     def isDown(self):
@@ -240,10 +238,12 @@ class handDetector:
                 if self.lmList[20][2] > self.lmList[19][2]:
                     self.counter += 1
                     print(self.counter, "baawah kiri")
+                    return True
             elif self.isRight() and self.lmList[0][2] > self.lmList[20][2]:
                 if self.lmList[20][2] < self.lmList[19][2]:
                     self.counter += 1
                     print(self.counter, "bawah kanan")
+                    return True
             elif self.angle >= 65 and self.angle <= 105:
                 if self.lmList[20][2] > self.lmList[19][2]:
                     print("bawah")
@@ -256,11 +256,12 @@ class handDetector:
                 if self.lmList[8][2] < self.lmList[5][2]:
                     self.counter += 1
                     print(self.counter, "atas kiri")
+                    return True
             elif self.isRight():
                 if self.lmList[8][2] < self.lmList[7][2]:
                     self.counter += 1
                     print(self.counter, "atas kanan")
-
+                    return True
             else:
                 if self.angle >= 65 and self.angle <= 105:
                     if self.lmList[8][2] < self.lmList[5][2]:
@@ -288,6 +289,8 @@ def update(socketio):
     pTime = 0
     cap = cv2.VideoCapture(0)
     detector = handDetector()
+    countBoost = 0
+
 
     while True:
         success, img = cap.read()
@@ -308,6 +311,8 @@ def update(socketio):
                     (255, 0, 255), 3)
         cv2.putText(img, str(handSide), (500, 50), cv2.FONT_HERSHEY_PLAIN, 3,
                     (255, 0, 255), 2)
+        
+        # time.sleep(0.1)
         # print(fingers)
         # print(handSide)
         # print(tilt_angle)
@@ -329,9 +334,9 @@ def update(socketio):
         messages["b"] = 0
 
         if detector.isLeft():
-            messages["a"] = 1.0
+            messages["a"] = 1
         elif detector.isRight():
-            messages["d"] = 1.0
+            messages["d"] = 1
 
         if detector.isUp():
             messages["w"] = 1
@@ -339,32 +344,39 @@ def update(socketio):
             messages["s"] = 1
 
         if detector.isBoost():
+            countBoost+=1
+        else:
+            countBoost = 0
+            
+        if detector.isBoost() and countBoost > 5:
             messages["b"] = 1
 
         for key, value in messages.items():
             print(f"{key}: {value}")
+        
+        print("")   
+        socketio.emit("receive_message", messages)
+        messages = ""
+        # messages = ["-", "-", "-"]
+        # if detector.isLeft():
+        #     messages[0] = "a"
+        # elif detector.isRight():
+        #     messages[0] = "d"
 
-        messages = ["-", "-", "-"]
-        if detector.isLeft():
-            messages[0] = "a"
-        elif detector.isRight():
-            messages[0] = "d"
+        # if detector.isUp():
+        #     messages[1] = "w"
+        # elif detector.isDown():
+        #     messages[1] = "s"
 
-        if detector.isUp():
-            messages[1] = "w"
-        elif detector.isDown():
-            messages[1] = "s"
-
-        if detector.isBoost():
-            messages[2] = "b"
+        # if detector.isBoost():
+        #     messages[2] = "b"
         cv2.imshow("Image", img)
 
         # Tambahkan pengecekan untuk tombol 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        socketio.emit("receive_message", messages)
-        messages = ""
+      
         socketio.sleep(0)
     cap.release()
     cv2.destroyAllWindows()
