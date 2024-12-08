@@ -22,22 +22,36 @@ Technically, the game will leverage Three.js for rendering 3D environments, whil
 
 ## Development Process
 
-1. Importing the envmap and the Landscape
+### 1. Importing the envmap and the Landscape
 
-   The envmap is used to enhance the realism of materials by simulating reflections or lighting from the surrounding environment. to do this we need to import the `envmap.jpg` and then map it into a sphere.
+The envmap is used to enhance the realism of materials by simulating reflections or lighting from the surrounding environment. to do this we need to import the `envmap.jpg` and then map it into a sphere.
 
-   ![alt text](<img/Screenshot from 2024-11-30 16-33-59.png>)
+![alt text](<img/Screenshot from 2024-11-30 16-33-59.png>)
 
-   The sphere is then used to render the environment by making it as if the observer were inside of the envmap-sphere. Which we then used to give a sense of realism to landscape.
-   ![alt text](<img/Screenshot from 2024-11-30 17-51-55.png>)
-   The landscape was rendered with this tools called `GLTF` to render the `scene.glb`.
+The sphere is then used to render the environment by making it as if the observer were inside of the envmap-sphere. Which we then used to give a sense of realism to landscape.
+![alt text](<img/Screenshot from 2024-11-30 17-51-55.png>)
+The landscape was rendered with the tool `GLTF` to render the `scene.glb`. This `GLTF` tools is semi-automatically generated with a tool called `gltfjsx`, for more information refer to to this [link](https://github.com/pmndrs/gltfjsx).
 
-2. Importing the airplane
-   spawn the airplane
-   ![alt text](<img/Screenshot from 2024-11-30 21-24-56.png>)
+The tool is useful enough to create the mesh configuration of our project. However, this tool can only generate `.jsx` file. Hence, our project which uses `.tsx` needed more effort to to leverage the development using typescript.
 
-   Reposition the airplane
-   ![alt text](<img/Screenshot from 2024-11-30 21-40-35.png>)
+![alt text](<img/Screenshot from 2024-12-09 02-01-49.png>)
+The `gltfjsx` is useful enough to generate the different parts of our 3D model to be rendered, for 3D model often has many different positioning of certain parts, different materials, etc.
 
-3. Set the camera FOV
-   ![alt text](<img/Screenshot from 2024-12-01 00-15-04.png>)
+### 2. Importing the airplane to the scene
+
+![alt text](<img/Screenshot from 2024-11-30 21-24-56.png>)
+The tool used to import the airplane is the same tool as which the `scene.glb` was imported; that is using `gltfjsx`. The airplane were originally imported at the the middle of the scene, which needs positioning afterwards.
+
+### 3. Airplane Repositioning
+
+![alt text](<img/Screenshot from 2024-11-30 21-40-35.png>)
+The airplane is then positioned at point facing the landscape(`scene.glb`).
+
+### 4. Set the camera FOV
+
+![alt text](<img/Screenshot from 2024-12-09 01-48-40.png>)
+Techniques used to achieve this effect involved in multiplying many different matrices to the airplane's camera matrix.
+
+### 5. Airplane Control
+
+The airplane was originally controlled using keys such as `W`, `A`, `S`, `D`. But in order to enhance the game experience we decided to implement **computer vision** which detects the hand gesture of the player.
