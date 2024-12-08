@@ -2,6 +2,14 @@ import { Html, useProgress } from '@react-three/drei';
 
 export default function LoadingScreen() {
   const { progress } = useProgress();
+
+  if (progress === 100) {
+    const pauseTextDiv = document.getElementById('pause-text');
+    if (pauseTextDiv) {
+      pauseTextDiv.style.display = 'block';
+    }
+  }
+
   return (
     <Html center>
       <div

@@ -63,6 +63,19 @@ socket.on('connect_error', (error) => {
   messages = null;
 });
 
+function updatePauseText() {
+  const pauseTextElement = document.getElementById('pause-text');
+  if (pauseTextElement) {
+    if (isPaused) {
+      pauseTextElement.textContent = "[PAUSED] Press 'p' to continue";
+    } else {
+      pauseTextElement.textContent = "[RUNNING] Press 'p' to pause";
+    }
+  }
+}
+
+updatePauseText();
+
 export function updatePlaneAxis(
   x: Vector3,
   y: Vector3,
@@ -78,9 +91,11 @@ export function updatePlaneAxis(
   if (controls['p']) {
     isPaused = !isPaused; // Toggle isPaused state
     controls['p'] = false; // Reset the 'p' control to avoid repeated toggling
+    updatePauseText();
   }
 
   if (isPaused) {
+    updatePauseText();
     return; // Skip all updates if paused
   }
 
