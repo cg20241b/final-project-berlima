@@ -101,12 +101,17 @@ export default function Airplane({ boundingBox, ...props }: AirplaneProps) {
       groupRef.current.matrixWorldNeedsUpdate = true;
     }
 
-    var quatA = new Quaternion().copy(delayedQuaternion);
-    var quatB = new Quaternion();
+    // eslint-disable-next-line prefer-const
+    let quatA = new Quaternion().copy(delayedQuaternion);
+    // eslint-disable-next-line prefer-const
+    let quatB = new Quaternion();
     quatB.setFromRotationMatrix(rotMatrix);
 
-    var interpolationFactor = 0.175;
-    var interpolatedQuaternion = new Quaternion().copy(quatA);
+    // eslint-disable-next-line prefer-const
+    let interpolationFactor = 0.175;
+    // eslint-disable-next-line prefer-const
+    let interpolatedQuaternion = new Quaternion().copy(quatA);
+
     interpolatedQuaternion.slerp(quatB, interpolationFactor);
     delayedQuaternion.copy(interpolatedQuaternion);
 
