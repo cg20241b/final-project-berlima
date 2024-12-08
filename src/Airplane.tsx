@@ -26,6 +26,10 @@ type AirplaneProps = {
 
 export const planePosition = new Vector3(0, 3, 7);
 
+// This is to make the plane rotation slightly delayed
+const delayedRotMatrix = new Matrix4();
+const delayedQuaternion = new Quaternion();
+
 export default function Airplane({ boundingBox, ...props }: AirplaneProps) {
   // Vector for controlling the plane
   const x = new Vector3(1, 0, 0);
@@ -83,16 +87,12 @@ export default function Airplane({ boundingBox, ...props }: AirplaneProps) {
       groupRef.current.matrixWorldNeedsUpdate = true;
     }
 
-    // This is to make the plane rotation slightly delayed
-    const delayedRotMatrix = new Matrix4();
-    const delayedQuaternion = new Quaternion();
-
-    const quatA = new Quaternion().copy(delayedQuaternion);
-    const quatB = new Quaternion();
+    var quatA = new Quaternion().copy(delayedQuaternion);
+    var quatB = new Quaternion();
     quatB.setFromRotationMatrix(rotMatrix);
 
-    const interpolationFactor = 0.175;
-    const interpolatedQuaternion = new Quaternion().copy(quatA);
+    var interpolationFactor = 0.175;
+    var interpolatedQuaternion = new Quaternion().copy(quatA);
     interpolatedQuaternion.slerp(quatB, interpolationFactor);
     delayedQuaternion.copy(interpolatedQuaternion);
 
@@ -107,6 +107,7 @@ export default function Airplane({ boundingBox, ...props }: AirplaneProps) {
           planePosition.z,
         ),
       )
+      // .multiply(rotMatrix)
       .multiply(delayedRotMatrix)
       // Move the camera at the center of the plane
       .multiply(new Matrix4().makeRotationX(-0.2)) // Rotate the camera slightly downward with an angle of depression

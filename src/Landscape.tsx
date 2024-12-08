@@ -17,7 +17,7 @@ interface Nodes {
 
 export default function Landscape(props: GroupProps) {
   const { nodes, materials } = useGLTF(
-    '/assets/models/scene.glb',
+    '/assets/models/scene1.glb',
   ) as unknown as {
     nodes: Nodes;
     materials: { [key: string]: MeshStandardMaterial };
@@ -130,4 +130,4 @@ export default function Landscape(props: GroupProps) {
   );
 }
 
-useGLTF.preload('/assets/models/scene.glb');
+useGLTF.preload('/assets/models/scene1.glb');
