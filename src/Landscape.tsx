@@ -88,7 +88,7 @@ export default function Landscape(props: GroupProps) {
           geometry={nodes.landscape_borders.geometry}
           material={materials['Material.010']}
         />
-        <mesh
+        {/* <mesh
           geometry={nodes.Cube001.geometry}
           material={materials['Material.003']}
           position={[-1.04, 2.766, 1.871]}
@@ -99,7 +99,7 @@ export default function Landscape(props: GroupProps) {
           material={materials['Material.003']}
           position={[-0.243, 2.766, 1.293]}
           scale={[0.22, 2.207, 0.22]}
-        />
+        /> */}
 
         <mesh geometry={nodes.water.geometry} material={materials.Water} />
         <mesh geometry={nodes.water1.geometry} material={materials.Water} />
