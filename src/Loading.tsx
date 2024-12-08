@@ -8,7 +8,7 @@ export default function LoadingScreen() {
         style={{
           width: '100%',
           position: 'absolute',
-          bottom: 0,
+          bottom: '5%',
           left: 0,
           zIndex: 999,
         }}
@@ -17,6 +17,7 @@ export default function LoadingScreen() {
           style={{
             width: '90%',
             margin: '0 auto 100px auto',
+            padding: '0px 120px',
           }}
         >
           <h1
