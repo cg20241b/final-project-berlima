@@ -33,11 +33,15 @@ let isPaused = false;
 
 export let messages: Controls | null = null;
 export let turbo = 0;
-const socket = io('http://localhost:4000');
+export let socketFlag = false;
+const socket = io('http://localhost:4000', {
+  reconnectionAttempts: 1,
+});
 
 socket.on('connect', () => {
   // eslint-disable-next-line no-console
   console.log('connected');
+  socketFlag = true;
   socket.on('receive_message', (data: Controls) => {
     messages = data;
     // eslint-disable-next-line no-console
@@ -48,6 +52,14 @@ socket.on('connect', () => {
 socket.on('disconnect', () => {
   // eslint-disable-next-line no-console
   console.log('disconnected');
+  socketFlag = false;
+  messages = null;
+});
+
+socket.on('connect_error', (error) => {
+  // eslint-disable-next-line no-console
+  console.error('Socket connection error:', error);
+  socketFlag = false;
   messages = null;
 });
 
@@ -58,7 +70,7 @@ export function updatePlaneAxis(
   planePosition: Vector3,
   camera: PerspectiveCamera,
 ) {
-  if (!messages) {
+  if (socketFlag && !messages) {
     return;
   }
 
@@ -117,7 +129,6 @@ export function updatePlaneAxis(
     x.set(1, 0, 0);
     y.set(0, 1, 0);
     z.set(0, 0, 1);
-    // planePosition.set(0, 3, 7);
   }
 
   // Update orientation

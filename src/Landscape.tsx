@@ -1,6 +1,6 @@
 import { MeshReflectorMaterial, useGLTF } from '@react-three/drei';
 import { GroupProps } from '@react-three/fiber';
-import { useEffect, useMemo } from 'react';
+import * as React from 'react';
 import { BufferGeometry, Color, MeshStandardMaterial } from 'three';
 
 interface Nodes {
@@ -21,7 +21,7 @@ export default function Landscape(props: GroupProps) {
     materials: { [key: string]: MeshStandardMaterial };
   };
 
-  const { waterMaterial } = useMemo(() => {
+  const { waterMaterial } = React.useMemo(() => {
     const lightsMaterial = new MeshStandardMaterial({
       envMapIntensity: 0,
       color: new Color('#ea6619'),
@@ -53,7 +53,7 @@ export default function Landscape(props: GroupProps) {
     return { lightsMaterial, waterMaterial: waterMat };
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const LandscapeMat = materials['Material.009'] as MeshStandardMaterial;
     LandscapeMat.envMapIntensity = 0.75;
 

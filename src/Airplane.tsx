@@ -13,24 +13,20 @@ import { Quaternion } from 'three';
 
 import { updatePlaneAxis } from './control';
 
-// Vector for controlling the plane
-const x = new Vector3(1, 0, 0);
-const y = new Vector3(0, 1, 0);
-const z = new Vector3(0, 0, 1);
-
-export const planePosition = new Vector3(0, 3, 7);
-
-// This is to make the plane rotation slightly delayed
-const delayedRotMatrix = new Matrix4();
-const delayedQuaternion = new Quaternion();
-
 interface Nodes {
   supports: Mesh;
   chassis: Mesh;
   helix: Mesh;
 }
 
+export const planePosition = new Vector3(0, 3, 7);
+
 export default function Airplane(props: GroupProps) {
+  // Vector for controlling the plane
+  const x = new Vector3(1, 0, 0);
+  const y = new Vector3(0, 1, 0);
+  const z = new Vector3(0, 0, 1);
+
   const { nodes, materials } = useGLTF(
     '/assets/models/airplane.glb',
   ) as unknown as {
@@ -41,9 +37,6 @@ export default function Airplane(props: GroupProps) {
   const helixMeshRef = React.useRef<Mesh>(null);
 
   useFrame(({ camera }) => {
-    // Uncomment this line if you want to move the plane forward
-    // planePosition.add(new Vector3(0, 0, -0.005));
-
     updatePlaneAxis(x, y, z, planePosition, camera as PerspectiveCamera);
 
     const rotMatrix = new Matrix4().makeBasis(x, y, z);
@@ -63,6 +56,10 @@ export default function Airplane(props: GroupProps) {
       groupRef.current.matrix.copy(matrix);
       groupRef.current.matrixWorldNeedsUpdate = true;
     }
+
+    // This is to make the plane rotation slightly delayed
+    const delayedRotMatrix = new Matrix4();
+    const delayedQuaternion = new Quaternion();
 
     const quatA = new Quaternion().copy(delayedQuaternion);
     const quatB = new Quaternion();
