@@ -323,13 +323,13 @@ def update(socketio):
         messages = {
             "a": 0.0,
             "d": 0.0,
-            "W": 0,
+            "w": 0,
             "s": 0,
             "b": 0
         }
         messages["a"] = 0.0
         messages["d"] = 0.0
-        messages["w"] = 0
+        # messages["w"] = 0
         messages["s"] = 0
         messages["b"] = 0
 
