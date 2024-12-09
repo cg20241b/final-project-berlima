@@ -45,13 +45,21 @@ The tool used to import the airplane is the same tool as which the `scene.glb` w
 ### 3. Airplane Repositioning
 
 ![alt text](<img/Screenshot from 2024-11-30 21-40-35.png>)
+
 The airplane is then positioned at point facing the landscape(`scene.glb`).
 
 ### 4. Set the camera FOV
 
 ![alt text](<img/Screenshot from 2024-12-09 01-48-40.png>)
+
 Techniques used to achieve this effect involved in multiplying many different matrices to the airplane's camera matrix.
 
-### 5. Airplane Control
+### 5. Adding Motion Blur on the Airplane
+
+![alt text](image-1.png)
+
+Adding motion blur involves using the EffectComposer and ShaderPass with a custom motion blur shader. By rendering the scene multiple times with slight offsets and blending these renders, you can simulate the visual effect of motion blur.
+
+### 6. Airplane Control
 
 The airplane was originally controlled using keys such as `W`, `A`, `S`, `D`. But in order to enhance the game experience we decided to implement **computer vision** which detects the hand gesture of the player.
